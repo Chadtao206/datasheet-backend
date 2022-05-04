@@ -16,21 +16,23 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.get("/test-dev", (req, res) => {
-  res.json("you got it dude!");
-});
+// app.get("/test-dev", (req, res) => {
+//   res.json("you got it dude!");
+// });
 // POST request to fetch data for PDF generation
-app.post("/create-pdf", (req, res) => {
-  pdf.create(pdfTemplate(req.body), {}).toFile("datasheet.pdf", (err) => {
-    if (err) {
-      res.send(Promise.reject());
-    }
-    res.send(Promise.resolve());
-  });
-});
+// app.post("/create-pdf", (req, res) => {
+//   console.log("CREATE PDF REQ");
+//   pdf.create(pdfTemplate(req.body), {}).toBuffer((err, buffer) => {
+//     if (err) {
+//       res.send(Promise.reject());
+//     }
+//     res.send(buffer);
+//   });
+// });
 
 // POST request to fetch data for PDF generation
 app.post("/download-pdf", (req, res) => {
+  console.log("HITTING DL PPDF");
   const config = {
     format: "Letter", // allowed units: A3, A4, A5, Legal, Letter, Tabloid
     orientation: "portrait", // portrait or landscape
@@ -48,12 +50,14 @@ app.post("/download-pdf", (req, res) => {
     },
   };
 
-  pdf.create(pdfTemplate(req.body), config).toFile("datasheet.pdf", (err) => {
-    if (err) {
-      res.send(Promise.reject());
-    }
-    res.send(Promise.resolve());
-  });
+  pdf
+    .create(pdfTemplate(req.body), config)
+    .toFile("datasheet.pdf", (err, file) => {
+      if (err) {
+        res.send(Promise.reject());
+      }
+      res.send(file);
+    });
 });
 
 // GET request to send the generated PDF to client
